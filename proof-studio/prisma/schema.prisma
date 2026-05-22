@@ -1,0 +1,70 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id                        String    @id @default(cuid())
+  email                     String    @unique
+  hashedPassword            String
+  name                      String?
+  hasSeenDemo               Boolean   @default(false)
+  createdDemoProject        Boolean   @default(false)
+  completedFirstTestimonial Boolean   @default(false)
+  completedFirstContentPack Boolean   @default(false)
+  viewedWall                Boolean   @default(false)
+  projects                  Project[]
+}
+
+model Project {
+  id               String        @id @default(cuid())
+  name             String
+  niche            String
+  brandName        String?
+  logoUrl          String?
+  brandColor       String?
+  language         String        @default("en")
+  formWelcomeText  String?
+  formThankYouText String?
+  userId           String
+  user             User          @relation(fields: [userId], references: [id])
+  isDemo           Boolean       @default(false)
+  testimonials     Testimonial[]
+}
+
+model Testimonial {
+  id                   String       @id @default(cuid())
+  clientName           String?
+  rawText              String?
+  clientRole           String
+  resultMetric         String
+  tone                 String
+  rating               Int?
+  isVideo              Boolean      @default(false)
+  videoUrl             String?
+  videoStorageKey      String?
+  videoDurationSeconds Int?
+  transcript           String?
+  allowNameDisplay     Boolean      @default(true)
+  tags                 String?      @default("")
+  source               String       @default("manual")
+  isFeatured           Boolean      @default(false)
+  caseStudy            String?
+  projectId            String
+  project              Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  contentPack          ContentPack?
+}
+
+model ContentPack {
+  id               String      @id @default(cuid())
+  linkedinPosts    String      // Stored as JSON string array
+  caseStudyOutline String
+  landingBlock     String
+  shortVideoScript String
+  testimonialId    String      @unique
+  testimonial      Testimonial @relation(fields: [testimonialId], references: [id], onDelete: Cascade)
+}
