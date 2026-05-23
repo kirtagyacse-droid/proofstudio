@@ -288,7 +288,22 @@ export default function PublicForm({ params }: { params: Promise<{ projectId: st
 
       {!project.logoUrl && (
         <div style={{ position: 'absolute', bottom: '1.5rem', width: '100%', textAlign: 'center' }}>
-          <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem', opacity: 0.7, transition: 'opacity 0.2s' }} onMouseOver={e => e.currentTarget.style.opacity = '1'} onMouseOut={e => e.currentTarget.style.opacity = '0.7'}>
+          <style>{`
+            .powered-by-link {
+              display: inline-flex;
+              align-items: center;
+              gap: 8px;
+              color: var(--text-muted);
+              text-decoration: none;
+              font-size: 0.85rem;
+              opacity: 0.7;
+              transition: opacity 0.2s;
+            }
+            .powered-by-link:hover {
+              opacity: 1;
+            }
+          `}</style>
+          <a href="/" className="powered-by-link">
             <span>Powered by</span>
             <Image src="/logo-icon.png" alt="ProofStudio" width={20} height={20} />
             <span style={{ fontWeight: 600 }}>ProofStudio</span>
