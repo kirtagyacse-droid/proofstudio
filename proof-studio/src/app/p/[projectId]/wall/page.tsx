@@ -48,8 +48,8 @@ export default async function WallOfProof({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { projectId } = await params;
-  const resolvedSearchParams = await searchParams;
-  const isEmbed = resolvedSearchParams.embed === '1';
+  const resolvedSearchParams = (await searchParams) || {};
+  const isEmbed = resolvedSearchParams?.embed === '1';
 
   const project = await prisma.project.findUnique({
     where: { id: projectId },
