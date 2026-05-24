@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Loader from '@/components/Loader';
 
 export default function NewProject() {
   const router = useRouter();
@@ -69,7 +70,11 @@ export default function NewProject() {
           {error && <div style={{ color: 'var(--danger)', fontSize: '0.9rem' }}>{error}</div>}
           
           <button type="submit" className="btn btn-primary mt-4" disabled={saving}>
-            {saving ? 'Creating...' : 'Create Project'}
+            {saving ? (
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Loader size={16} /> Creating...
+              </span>
+            ) : 'Create Project'}
           </button>
         </form>
       </div>

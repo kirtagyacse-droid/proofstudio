@@ -10,6 +10,7 @@ import EmbedSnippetCard from '@/components/EmbedSnippetCard';
 import GettingStartedChecklist, { UserOnboarding } from '@/components/GettingStartedChecklist';
 import VideoThumbnail from '@/components/VideoThumbnail';
 import VideoPlayerModal from '@/components/VideoPlayerModal';
+import Loader from '@/components/Loader';
 
 function getAccentStyles(brandColor: string) {
   let cleanHex = brandColor || '#6366F1';
@@ -40,6 +41,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
   const [tone, setTone] = useState('Professional');
   const [tags, setTags] = useState('');
   const [generatingFor, setGeneratingFor] = useState<string | null>(null);
+  const [isAddingTestimonial, setIsAddingTestimonial] = useState(false);
 
   // Video State
   const [isVideo, setIsVideo] = useState(false);
@@ -232,6 +234,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
 
   const handleAddTestimonial = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsAddingTestimonial(true);
     const res = await fetch('/api/testimonials', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -261,8 +264,9 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
       setVideoUrl('');
       setTranscript('');
       setIsVideo(false);
-      fetchProject();
+      await fetchProject();
     }
+    setIsAddingTestimonial(false);
   };
 
   const handleGenerate = async (testimonialId: string) => {
@@ -303,17 +307,30 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
   };
 
   const handleToggleFeatured = async (testimonialId: string, isFeatured: boolean) => {
+    // Optimistic UI Update
+    setProject((prev: any) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        testimonials: prev.testimonials.map((t: any) => 
+          t.id === testimonialId ? { ...t, isFeatured: !isFeatured } : t
+        )
+      };
+    });
+
     try {
       const res = await fetch(`/api/testimonials/${testimonialId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isFeatured: !isFeatured }),
       });
-      if (res.ok) {
+      if (!res.ok) {
+        // Revert on failure
         fetchProject();
       }
     } catch (err) {
       console.error(err);
+      fetchProject();
     }
   };
 
@@ -623,7 +640,13 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                   <label className="text-sm text-secondary block mb-2" style={{ fontWeight: 500 }}>Tags (comma-separated)</label>
                   <input type="text" className="input" value={tags} onChange={e => setTags(e.target.value)} placeholder="e.g. Video, B2B, Coaching" />
                 </div>
-                <button type="submit" className="btn btn-primary mt-2">Add Testimonial</button>
+                <button type="submit" className="btn btn-primary mt-2" disabled={isAddingTestimonial}>
+                  {isAddingTestimonial ? (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Loader size={16} /> Adding...
+                    </span>
+                  ) : 'Add Testimonial'}
+                </button>
               </form>
             </div>
           </aside>
@@ -682,7 +705,17 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
               </div>
             ) : (
               filteredTestimonials.map((t: any) => (
-                <div key={t.id} className="card" style={{ borderLeft: t.isFeatured ? '4px solid var(--accent-primary)' : '1px solid var(--border-subtle)', transition: 'var(--transition)' }}>
+                <div key={t.id} className="card relative" style={{ borderLeft: t.isFeatured ? '4px solid var(--accent-primary)' : '1px solid var(--border-subtle)', transition: 'var(--transition)', overflow: 'hidden' }}>
+                  
+                  {/* Generating AI Overlay */}
+                  {generatingFor === t.id && (
+                    <div className="overlay-loader animate-in">
+                      <Loader size={48} color="var(--accent-primary)" />
+                      <h3 className="mt-4 mb-1 text-white text-center">Generating AI Content Pack...</h3>
+                      <p className="text-sm text-white opacity-80 text-center px-4">Analyzing testimonial and writing posts. This takes ~10 seconds.</p>
+                    </div>
+                  )}
+
                   <div className="flex items-start justify-between" style={{ flexWrap: 'wrap-reverse', gap: '1rem' }}>
                     <div className="flex-1" style={{ width: '100%' }}>
                       {t.isVideo && (
@@ -811,12 +844,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                             disabled={generatingFor === t.id}
                             style={{ fontWeight: 500, width: '100%' }}
                           >
-                            {generatingFor === t.id ? (
-                              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                                <svg className="animate-spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{ animation: 'spin 1s linear infinite' }}><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
-                                Generating...
-                              </span>
-                            ) : 'Generate Content'}
+                            Generate Content
                           </button>
                         </div>
                       )}

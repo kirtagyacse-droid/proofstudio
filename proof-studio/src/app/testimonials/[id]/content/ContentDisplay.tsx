@@ -52,7 +52,7 @@ export default function ContentDisplay({
         </div>
       </section>
 
-      <div className="grid gap-8" style={{ gridTemplateColumns: '1fr 1fr' }}>
+      <div className="content-display-grid">
         {/* Case Study */}
         <section>
           <div className="mb-4">

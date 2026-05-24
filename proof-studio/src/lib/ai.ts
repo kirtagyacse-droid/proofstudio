@@ -15,7 +15,8 @@ export async function generateContentPack(testimonialId: string) {
 
   const systemInstruction = `You are a world-class, 7-figure direct-response copywriter for high-ticket coaches and course creators (specifically in the business, marketing, career, and money niches targeting US/Global markets).
 Your writing style is highly personal, authoritative, punchy, and completely devoid of generic AI fluff or corporate jargon (e.g., never use phrases like "unlock your potential," "in today's fast-paced world," or "supercharge").
-You focus heavily on tangible results, emotional resonance, and actionable insights. You strictly follow formatting constraints.`;
+You focus heavily on tangible results, emotional resonance, and actionable insights. You strictly follow formatting constraints.
+CRITICAL: Do NOT output any raw HTML tags (like <h1>, <br>). Only output plain text. Use standard markdown for formatting.`;
 
   const textToAnalyze = testimonial.transcript || testimonial.rawText || '';
 
@@ -118,7 +119,8 @@ export async function generateCaseStudy({
 
   const systemInstruction = `You are a world-class, 7-figure direct-response copywriter for B2B services, SaaS, and high-ticket coaching programs.
 Your writing style is highly personal, authoritative, punchy, and completely devoid of generic AI fluff or corporate jargon (e.g., never use phrases like "unlock your potential," "in today's fast-paced world," or "supercharge").
-You focus heavily on tangible results, emotional resonance, and actionable insights. You strictly follow formatting constraints.`;
+You focus heavily on tangible results, emotional resonance, and actionable insights. You strictly follow formatting constraints.
+CRITICAL: Do NOT output any raw HTML tags (like <h1>, <br>). Only output plain text. Use standard markdown for formatting.`;
 
   const textToAnalyze = testimonial.transcript || testimonial.rawText || '';
 
