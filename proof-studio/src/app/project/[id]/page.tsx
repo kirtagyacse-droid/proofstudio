@@ -11,6 +11,7 @@ import GettingStartedChecklist, { UserOnboarding } from '@/components/GettingSta
 import VideoThumbnail from '@/components/VideoThumbnail';
 import VideoPlayerModal from '@/components/VideoPlayerModal';
 import Loader from '@/components/Loader';
+import BrainGears from '@/components/BrainGears';
 
 function getAccentStyles(brandColor: string) {
   let cleanHex = brandColor || '#6366F1';
@@ -706,15 +707,6 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
             ) : (
               filteredTestimonials.map((t: any) => (
                 <div key={t.id} className="card relative" style={{ borderLeft: t.isFeatured ? '4px solid var(--accent-primary)' : '1px solid var(--border-subtle)', transition: 'var(--transition)', overflow: 'hidden' }}>
-                  
-                  {/* Generating AI Overlay */}
-                  {generatingFor === t.id && (
-                    <div className="overlay-loader animate-in">
-                      <Loader size={48} color="var(--accent-primary)" />
-                      <h3 className="mt-4 mb-1 text-white text-center">Generating AI Content Pack...</h3>
-                      <p className="text-sm text-white opacity-80 text-center px-4">Analyzing testimonial and writing posts. This takes ~10 seconds.</p>
-                    </div>
-                  )}
 
                   <div className="flex items-start justify-between" style={{ flexWrap: 'wrap-reverse', gap: '1rem' }}>
                     <div className="flex-1" style={{ width: '100%' }}>
@@ -838,14 +830,23 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                       ) : (
                         <div className="flex flex-col items-end gap-1" style={{ width: '100%' }}>
                           <span className="text-accent text-xs font-semibold uppercase tracking-wider" style={{ alignSelf: 'flex-end' }}>Step 3</span>
-                          <button 
-                            className="btn btn-secondary btn-sm" 
-                            onClick={() => handleGenerate(t.id)}
-                            disabled={generatingFor === t.id}
-                            style={{ fontWeight: 500, width: '100%' }}
-                          >
-                            Generate Content
-                          </button>
+                          {generatingFor === t.id ? (
+                            <div className="flex flex-col items-center justify-center p-3 rounded-lg border border-subtle w-full animate-in" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                              <BrainGears size={36} />
+                              <span className="text-xs text-center font-medium mt-3" style={{ color: 'var(--text-primary)' }}>
+                                Generating Content Pack...<br/>
+                                <span className="opacity-70 text-secondary" style={{ fontSize: '10px' }}>approx. 10 seconds</span>
+                              </span>
+                            </div>
+                          ) : (
+                            <button 
+                              className="btn btn-secondary btn-sm" 
+                              onClick={() => handleGenerate(t.id)}
+                              style={{ fontWeight: 500, width: '100%' }}
+                            >
+                              Generate Content
+                            </button>
+                          )}
                         </div>
                       )}
 
@@ -898,11 +899,11 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
 
               {/* Loader */}
               {isGeneratingCaseStudy && (
-                <div className="flex flex-col items-center justify-center py-12 gap-4">
-                  <svg className="animate-spin" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" strokeWidth="3" style={{ animation: 'spin 1s linear infinite' }}><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
-                  <div className="text-center">
+                <div className="flex flex-col items-center justify-center py-12 gap-4 animate-in">
+                  <BrainGears size={64} />
+                  <div className="text-center mt-4">
                     <h4 style={{ margin: 0, fontSize: '1.05rem' }}>Writing case study...</h4>
-                    <p className="text-xs text-muted mb-0 mt-1">We are analyzing the testimonial ground truth and shaping the narrative.</p>
+                    <p className="text-xs text-muted mb-0 mt-2">We are analyzing the testimonial ground truth and shaping the narrative.<br/>This usually takes about 10 seconds.</p>
                   </div>
                 </div>
               )}
